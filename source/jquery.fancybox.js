@@ -27,7 +27,7 @@
 			return obj && obj.hasOwnProperty && obj instanceof $;
 		},
 		isString = function(str) {
-			return str && $.type(str) === "string";
+			return str && typeof str === "string";
 		},
 		isPercentage = function(str) {
 			return isString(str) && str.indexOf('%') > 0;
@@ -238,7 +238,7 @@
 			}
 
 			// Normalize group
-			if (!$.isArray(group)) {
+			if (!Array.isArray(group)) {
 				group = isQuery(group) ? $(group).get() : [group];
 			}
 
@@ -253,7 +253,7 @@
 					hrefParts,
 					selector;
 
-				if ($.type(element) === "object") {
+				if (typeof element === "object" && obj !== null) {
 					// Check if is DOM element
 					if (element.nodeType) {
 						element = $(element);
@@ -445,7 +445,7 @@
 				stop = function () {
 					clear();
 
-					D.unbind('.player');
+					D.off('.player');
 
 					F.player.isActive = false;
 
@@ -455,7 +455,7 @@
 					if (F.current && (F.current.loop || F.current.index < F.group.length - 1)) {
 						F.player.isActive = true;
 
-						D.bind({
+						D.on({
 							'onCancel.player beforeClose.player' : stop,
 							'onUpdate.player'   : set,
 							'beforeLoad.player' : clear
@@ -591,7 +591,7 @@
 		// Shrink content to fit inside viewport or restore if resized
 		toggle: function ( action ) {
 			if (F.isOpen) {
-				F.current.fitToView = $.type(action) === "boolean" ? action : !F.current.fitToView;
+				F.current.fitToView = typeof action === "boolean" ? action : !F.current.fitToView;
 
 				// Help browser to restore document dimensions
 				if (isTouch) {
@@ -605,7 +605,7 @@
 		},
 
 		hideLoading: function () {
-			D.unbind('.loading');
+			D.off('.loading');
 
 			$('#fancybox-loading').remove();
 		},
@@ -615,11 +615,11 @@
 
 			F.hideLoading();
 
-			el = $(F.opts.tpl.loading).click(F.cancel).appendTo('body');
+			el = $(F.opts.tpl.loading).on('click', F.cancel).appendTo('body');
 
 			// If user will press the escape-button, the request will be canceled
-			D.bind('keydown.loading', function(e) {
-				if ((e.which || e.keyCode) === 27) {
+			D.on('keydown.loading', function(e) {
+				if (e.which === 27) {
 					e.preventDefault();
 
 					F.cancel();
@@ -662,11 +662,11 @@
 		// Unbind the keyboard / clicking actions
 		unbindEvents: function () {
 			if (F.wrap && isQuery(F.wrap)) {
-				F.wrap.unbind('.fb');
+				F.wrap.off('.fb');
 			}
 
-			D.unbind('.fb');
-			W.unbind('.fb');
+			D.off('.fb');
+			W.off('.fb');
 		},
 
 		bindEvents: function () {
@@ -679,12 +679,12 @@
 
 			// Changing document height on iOS devices triggers a 'resize' event,
 			// that can change document height... repeating infinitely
-			W.bind('orientationchange.fb' + (isTouch ? '' : ' resize.fb') + (current.autoCenter && !current.locked ? ' scroll.fb' : ''), F.update);
+			W.on('orientationchange.fb' + (isTouch ? '' : ' resize.fb') + (current.autoCenter && !current.locked ? ' scroll.fb' : ''), F.update);
 
 			keys = current.keys;
 
 			if (keys) {
-				D.bind('keydown.fb', function (e) {
+				D.on('keydown.fb', function (e) {
 					var code   = e.which || e.keyCode,
 						target = e.target || e.srcElement;
 
@@ -715,7 +715,7 @@
 			}
 
 			if ($.fn.mousewheel && current.mouseWheel) {
-				F.wrap.bind('mousewheel.fb', function (e, delta, deltaX, deltaY) {
+				F.wrap.on('mousewheel.fb', function (e, delta, deltaX, deltaY) {
 					var target = e.target || null,
 						parent = $(target),
 						canScroll = false;
@@ -749,7 +749,7 @@
 			var ret, obj = o || F.coming || F.current;
 
 			if (obj) {
-				if ($.isFunction( obj[event] )) {
+				if (typeof obj[event] === 'function') {
 					ret = obj[event].apply(obj, Array.prototype.slice.call(arguments, 1));
 				}
 
@@ -759,7 +759,7 @@
 
 				if (obj.helpers) {
 					$.each(obj.helpers, function (helper, opts) {
-						if (opts && F.helpers[helper] && $.isFunction(F.helpers[helper][event])) {
+						if (opts && F.helpers[helper] && typeof F.helpers[helper][event] === 'function') {
 							F.helpers[helper][event]($.extend(true, {}, F.helpers[helper].defaults, opts), obj);
 						}
 					});
@@ -798,11 +798,11 @@
 			margin  = coming.margin;
 			padding = coming.padding;
 
-			if ($.type(margin) === 'number') {
+			if (typeof margin === 'number') {
 				coming.margin = [margin, margin, margin, margin];
 			}
 
-			if ($.type(padding) === 'number') {
+			if (typeof padding === 'number') {
 				coming.padding = [padding, padding, padding, padding];
 			}
 
@@ -998,7 +998,7 @@
 					.attr('src', coming.href);
 
 			// This helps IE
-			$(coming.wrap).bind('onReset', function () {
+			$(coming.wrap).on('onReset', function () {
 				try {
 					$(this).find('iframe').hide().attr('src', '//about:blank').end().empty();
 				} catch (e) {}
@@ -1012,7 +1012,7 @@
 
 					// iOS will lose scrolling if we resize
 					if (!isTouch) {
-						$(this).bind('load.fb', F.update);
+						$(this).on('load.fb', F.update);
 					}
 
 					// Without this trick:
@@ -1113,7 +1113,7 @@
 
 						content = content.show().detach();
 
-						current.wrap.bind('onReset', function () {
+						current.wrap.on('onReset', function () {
 							if ($(this).find(content).length) {
 								content.hide().replaceAll( content.data(placeholder) ).data(placeholder, false);
 							}
@@ -1437,7 +1437,7 @@
 
 			// Assign a click event
 			if ( current.closeClick || (current.nextClick && F.group.length > 1) ) {
-				F.inner.css('cursor', 'pointer').bind('click.fb', function(e) {
+				F.inner.css('cursor', 'pointer').on('click.fb', function(e) {
 					if (!$(e.target).is('a') && !$(e.target).parent().is('a')) {
 						e.preventDefault();
 
@@ -1448,7 +1448,7 @@
 
 			// Create a close button
 			if (current.closeBtn) {
-				$(current.tpl.closeBtn).appendTo(F.skin).bind('click.fb', function(e) {
+				$(current.tpl.closeBtn).appendTo(F.skin).on('click.fb', function(e) {
 					e.preventDefault();
 
 					F.close();
@@ -1458,11 +1458,11 @@
 			// Create navigation arrows
 			if (current.arrows && F.group.length > 1) {
 				if (current.loop || current.index > 0) {
-					$(current.tpl.prev).appendTo(F.outer).bind('click.fb', F.prev);
+					$(current.tpl.prev).appendTo(F.outer).on('click.fb', F.prev);
 				}
 
 				if (current.loop || current.index < F.group.length - 1) {
-					$(current.tpl.next).appendTo(F.outer).bind('click.fb', F.next);
+					$(current.tpl.next).appendTo(F.outer).on('click.fb', F.next);
 				}
 			}
 
@@ -1735,20 +1735,20 @@
 			opts = $.extend({}, this.defaults, opts);
 
 			if (this.overlay) {
-				this.overlay.unbind('.overlay').width('auto').height('auto');
+				this.overlay.off('.overlay').width('auto').height('auto');
 
 			} else {
 				this.create(opts);
 			}
 
 			if (!this.fixed) {
-				W.bind('resize.overlay', $.proxy( this.update, this) );
+				W.on('resize.overlay', $.proxy( this.update, this) );
 
 				this.update();
 			}
 
 			if (opts.closeClick) {
-				this.overlay.bind('click.overlay', function(e) {
+				this.overlay.on('click.overlay', function(e) {
 					if ($(e.target).hasClass('fancybox-overlay')) {
 						if (F.isActive) {
 							F.close();
@@ -1765,7 +1765,7 @@
 		},
 
 		close : function() {
-			W.unbind('resize.overlay');
+			W.off('resize.overlay');
 
 			if (this.el.hasClass('fancybox-lock')) {
 				$('.fancybox-margin').removeClass('fancybox-margin');
@@ -1879,11 +1879,11 @@
 				title,
 				target;
 
-			if ($.isFunction(text)) {
+			if (typeof text === 'function') {
 				text = text.call(current.element, current);
 			}
 
-			if (!isString(text) || $.trim(text) === '') {
+			if (!isString(text) || text.trim() === '') {
 				return;
 			}
 
@@ -1928,7 +1928,7 @@
 			that     = $(this),
 			selector = this.selector || '',
 			run      = function(e) {
-				var what = $(this).blur(), idx = index, relType, relVal;
+				var what = $(this).trigger('blur'), idx = index, relType, relVal;
 
 				if (!(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) && !what.is('.fancybox-wrap')) {
 					relType = options.groupAttr || 'data-fancybox-group';
@@ -1958,10 +1958,10 @@
 		index   = options.index || 0;
 
 		if (!selector || options.live === false) {
-			that.unbind('click.fb-start').bind('click.fb-start', run);
+			that.off('click.fb-start').on('click.fb-start', run);
 
 		} else {
-			D.undelegate(selector, 'click.fb-start').delegate(selector + ":not('.fancybox-item, .fancybox-nav')", 'click.fb-start', run);
+			D.off('click.fb-start').on('click.fb-start', selector + ":not('.fancybox-item, .fancybox-nav')", run);
 		}
 
 		this.filter('[data-fancybox-start=1]').trigger('click');
@@ -1970,7 +1970,7 @@
 	};
 
 	// Tests that need a body at doc ready
-	D.ready(function() {
+	$(function() {
 		var w1, w2;
 
 		if ( $.scrollbarWidth === undefined ) {
@@ -1986,20 +1986,18 @@
 			};
 		}
 
-		if ( $.support.fixedPosition === undefined ) {
-			$.support.fixedPosition = (function() {
-				var elem  = $('<div style="position:fixed;top:20px;"></div>').appendTo('body'),
-					fixed = ( elem[0].offsetTop === 20 || elem[0].offsetTop === 15 );
+		function supportFixedPosition() {
+			var elem  = $('<div style="position:fixed;top:20px;"></div>').appendTo('body'),
+				fixed = ( elem[0].offsetTop === 20 || elem[0].offsetTop === 15 );
 
-				elem.remove();
+			elem.remove();
 
-				return fixed;
-			}());
+			return fixed;
 		}
 
 		$.extend(F.defaults, {
 			scrollbarWidth : $.scrollbarWidth(),
-			fixed  : $.support.fixedPosition,
+			fixed  : supportFixedPosition(),
 			parent : $('body')
 		});
 
