@@ -182,7 +182,7 @@
 						type   = item.type;
 						params = $.extend(true, {}, item.params, obj[ what ] || ($.isPlainObject(opts[ what ]) ? opts[ what ].params : null));
 
-						url = $.type( item.url ) === "function" ? item.url.call( this, rez, params, obj ) : format( item.url, rez, params );
+						url = typeof item.url === "function" ? item.url.call( this, rez, params, obj ) : format( item.url, rez, params );
 
 						break;
 					}
