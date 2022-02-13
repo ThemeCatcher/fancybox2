@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.1.8 (Sun, 06 Feb 2022)
+ * version: 2.1.9 (Sun, 13 Feb 2022)
  * requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -50,7 +50,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.1.8',
+		version: '2.1.9',
 
 		defaults: {
 			padding : 15,
